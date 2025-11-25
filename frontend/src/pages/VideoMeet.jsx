@@ -84,14 +84,15 @@ export default function VideoMeetComponent() {
   useEffect(() => {
     getPermissions();
   }, []);
-  const connectToSocketServer = () => {
-  console.log("Socket server connected (placeholder)");
-};
+
 
   let getUserMediaSuccess = (stream) => {
-    console.log("error");
-
+  window.localStream = stream;
+  if (localVideoRef.current) {
+    localVideoRef.current.srcObject = stream;
   }
+};
+
 
   let getUserMedia = () =>{
     if((video && videoAvailable || audio && audioAvailable)){
@@ -112,11 +113,21 @@ export default function VideoMeetComponent() {
   }
   
   
-  useEffect(() => {
-    if (video !== undefined && audio !== undefined) {
-      getUserMedia();
-    }
-  }, [audio, video]);
+  // useEffect(() => {
+  //   if (video !== undefined && audio !== undefined) {
+  //     getUserMedia();
+  //   }
+  // }, [audio, video]);
+
+   function gotMessageFromServer(){
+    console.log("I am Harry Potter");
+
+  }
+  
+  let connectToSocketServer = ()=>{
+    socektIdRef.current = io.connect(server_url, {secure:false});
+    socektIdRef.current.on('signal', gotMessageFromServer)
+  }
 
   let getMedia = () => {
     setVideo(videoAvailable);
@@ -146,7 +157,7 @@ export default function VideoMeetComponent() {
           <Button variant="contained" onClick = {connect}>Connect</Button>
 
           <div>
-            <video ref={localVideoRef} autoplay muted></video>
+            <video ref={localVideoRef} autoPlay muted playsInline ></video>
           </div>
         </div>
       ) : (
